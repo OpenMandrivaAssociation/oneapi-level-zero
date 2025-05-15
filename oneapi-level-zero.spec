@@ -1,21 +1,19 @@
 %define srcname level-zero
 
 %define major             1
-%define libloadername     %mklibname ze-loader %{major}
-%define libvalidationname %mklibname ze-validation-layer %{major}
-%define libtracingname    %mklibname ze-tracing-layer %{major}
+%define libloadername     %mklibname ze-loader
+%define libvalidationname %mklibname ze-validation-layer
+%define libtracingname    %mklibname ze-tracing-layer
 %define devname           %mklibname %{srcname} -d
 
 Name:           oneapi-level-zero
-Version:        1.22.1
-Release:        %mkrel 1
+Version:        1.22.2
+Release:        1
 Summary:        OneAPI Level Zero Specification Headers and Loader
 Group:          System/Libraries
 License:        MIT
 URL:            https://github.com/oneapi-src/level-zero
-Source:         %{url}/archive/v%{version}/%{srcname}-%{version}.tar.gz
-
-ExclusiveArch:  x86_64
+Source0:         https://github.com/oneapi-src/level-zero/archive/v%{version}/%{srcname}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  chrpath
@@ -96,10 +94,10 @@ and driver characteristics.
 # spdlog uses fmt, but since this doesn't setup linking, use it in header only mode
 export CXXFLAGS="%{build_cxxflags} -DFMT_HEADER_ONLY=1"
 %cmake -DSYSTEM_SDPLOG=ON
-%cmake_build
+%make_build
 
 %install
-%cmake_install
+%make_install -C build
 
 # Install also the zello_world binary to ease up testing of the l0
 mkdir -p %{buildroot}%{_bindir}
