@@ -1,9 +1,7 @@
 %define srcname level-zero
 
 %define major             1
-%define libloadername     %mklibname ze-loader
-%define libvalidationname %mklibname ze-validation-layer
-%define libtracingname    %mklibname ze-tracing-layer
+%define libloadername     %mklibname oneapi-level-zero
 %define devname           %mklibname %{srcname} -d
 
 Name:           oneapi-level-zero
@@ -32,32 +30,9 @@ Summary:        OneAPI Level Zero Specification Headers and Loader
 Group:          System/Libraries
 # Useful for a quick oneAPI Level-Zero testing
 Recommends:     %{name}-zello_world
+Provides:       oneapi-level-zero = %{version}-%{release}
 
 %description -n %{libloadername}
-The objective of the oneAPI Level-Zero Application Programming Interface
-(API) is to provide direct-to-metal interfaces to offload accelerator
-devices. Its programming interface can be tailored to any device needs
-and can be adapted to support broader set of languages features such as
-function pointers, virtual functions, unified memory,
-and I/O capabilities.
-
-%package -n %{libvalidationname}
-Summary:        OneAPI Level Zero Specification Headers and Loader
-Group:          System/Libraries
-
-%description -n %{libvalidationname}
-The objective of the oneAPI Level-Zero Application Programming Interface
-(API) is to provide direct-to-metal interfaces to offload accelerator
-devices. Its programming interface can be tailored to any device needs
-and can be adapted to support broader set of languages features such as
-function pointers, virtual functions, unified memory,
-and I/O capabilities.
-
-%package -n %{libtracingname}
-Summary:        OneAPI Level Zero Specification Headers and Loader
-Group:          System/Libraries
-
-%description -n %{libtracingname}
 The objective of the oneAPI Level-Zero Application Programming Interface
 (API) is to provide direct-to-metal interfaces to offload accelerator
 devices. Its programming interface can be tailored to any device needs
@@ -69,8 +44,6 @@ and I/O capabilities.
 Summary:        The oneAPI Level Zero Specification Headers and Loader development package
 Group:          Development/C++
 Requires:       %{libloadername}%{?_isa} = %{version}-%{release}
-Requires:       %{libvalidationname}%{?_isa} = %{version}-%{release}
-Requires:       %{libtracingname}%{?_isa} = %{version}-%{release}
 Provides:       %{name}-devel = %{version}-%{release}
 Provides:       %{srcname}-devel = %{version}-%{release}
 
@@ -108,13 +81,7 @@ chrpath --delete %{buildroot}%{_bindir}/zello_world
 %license LICENSE
 %doc README.md SECURITY.md
 %{_libdir}/libze_loader.so.%{major}{,.*}
-
-%files -n %{libvalidationname}
-%license LICENSE
 %{_libdir}/libze_validation_layer.so.%{major}{,.*}
-
-%files -n %{libtracingname}
-%license LICENSE
 %{_libdir}/libze_tracing_layer.so.%{major}{,.*}
 
 %files zello_world
