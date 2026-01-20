@@ -5,7 +5,7 @@
 %define devname           %mklibname %{srcname} -d
 
 Name:           oneapi-level-zero
-Version:        1.22.2
+Version:        1.27.0
 Release:        1
 Summary:        OneAPI Level Zero Specification Headers and Loader
 Group:          System/Libraries
