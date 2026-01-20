@@ -13,6 +13,7 @@ License:        MIT
 URL:            https://github.com/oneapi-src/level-zero
 Source0:         https://github.com/oneapi-src/level-zero/archive/v%{version}/%{srcname}-%{version}.tar.gz
 
+BuildRequires:  make
 BuildRequires:  cmake
 BuildRequires:  chrpath
 BuildRequires:  pkgconfig(spdlog)
