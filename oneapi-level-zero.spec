@@ -5,7 +5,7 @@
 %define devname           %mklibname %{srcname} -d
 
 Name:           oneapi-level-zero
-Version:        1.22.2
+Version:        1.31.0
 Release:        1
 Summary:        OneAPI Level Zero Specification Headers and Loader
 Group:          System/Libraries
@@ -61,7 +61,7 @@ of the oneAPI Level-Zero driver and dumping out the basic device
 and driver characteristics.
 
 %prep
-%autosetup -p1 -n %{srcname}-%{version}
+%autosetup -p1 -n level-zero-1.31.0
 
 %build
 # spdlog uses fmt, but since this doesn't setup linking, use it in header only mode
