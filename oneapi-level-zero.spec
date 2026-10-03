@@ -1,21 +1,21 @@
 %define srcname level-zero
 
-%define major             1
-%define libloadername     %mklibname oneapi-level-zero
-%define devname           %mklibname %{srcname} -d
+%define major		1
+%define libloadername	%mklibname oneapi-level-zero
+%define devname		%mklibname %{srcname} -d
 
-Name:           oneapi-level-zero
-Version:        1.31.0
-Release:        1
-Summary:        OneAPI Level Zero Specification Headers and Loader
-Group:          System/Libraries
-License:        MIT
-URL:            https://github.com/oneapi-src/level-zero
-Source0:         https://github.com/oneapi-src/level-zero/archive/v%{version}/%{srcname}-%{version}.tar.gz
+Name:		oneapi-level-zero
+Version:	1.32.0
+Release:	1
+Summary:	OneAPI Level Zero Specification Headers and Loader
+Group:		System/Libraries
+License:	MIT
+URL:		https://github.com/oneapi-src/level-zero
+Source0:	https://github.com/oneapi-src/level-zero/archive/refs/tags/v%{version}/level-zero-%{version}.tar.gz
 
-BuildRequires:  cmake
-BuildRequires:  chrpath
-BuildRequires:  pkgconfig(spdlog)
+BuildRequires:	cmake
+BuildRequires:	make
+BuildRequires:	chrpath
 
 %description
 The objective of the oneAPI Level-Zero Application Programming Interface
@@ -26,11 +26,11 @@ function pointers, virtual functions, unified memory,
 and I/O capabilities.
 
 %package -n %{libloadername}
-Summary:        OneAPI Level Zero Specification Headers and Loader
-Group:          System/Libraries
+Summary:	OneAPI Level Zero loader
+Group:		System/Libraries
 # Useful for a quick oneAPI Level-Zero testing
-Recommends:     %{name}-zello_world
-Provides:       oneapi-level-zero = %{version}-%{release}
+Recommends:	%{name}-zello_world
+Provides:	oneapi-level-zero = %{EVRD}
 
 %description -n %{libloadername}
 The objective of the oneAPI Level-Zero Application Programming Interface
@@ -41,41 +41,50 @@ function pointers, virtual functions, unified memory,
 and I/O capabilities.
 
 %package -n %{devname}
-Summary:        The oneAPI Level Zero Specification Headers and Loader development package
-Group:          Development/C++
-Requires:       %{libloadername}%{?_isa} = %{version}-%{release}
-Provides:       %{name}-devel = %{version}-%{release}
-Provides:       %{srcname}-devel = %{version}-%{release}
+Summary:	The oneAPI Level Zero headers and loader development files
+Group:		Development/C++
+Requires:	%{libloadername}%{?_isa} = %{EVRD}
+Provides:	%{name}-devel = %{EVRD}
+Provides:	%{srcname}-devel = %{EVRD}
 
 %description -n %{devname}
 The %{name}-devel package contains library and header files for
 developing applications that use %{name}.
 
-%package        zello_world
-Summary:        The oneAPI Level Zero quick test package with zello_world binary
+%package	zello_world
+Summary:	The oneAPI Level Zero quick test program
+Group:		Development/Tools
+Requires:	%{libloadername}%{?_isa} = %{EVRD}
 
-%description    zello_world
+%description	zello_world
 The %{name}-zello_world package contains a zello_world binary which
-is capable of a quick test.
-of the oneAPI Level-Zero driver and dumping out the basic device
-and driver characteristics.
+is capable of a quick test of the oneAPI Level-Zero driver and dumping
+out the basic device and driver characteristics.
 
 %prep
-%autosetup -p1 -n level-zero-1.31.0
+%autosetup -p1 -n level-zero-%{version}
+# Top-level builds force -Werror. Keep the package buildable with the
+# distro warning flags.
+sed -i \
+	-e 's/set(CMAKE_COMPILE_WARNING_AS_ERROR ON)/set(CMAKE_COMPILE_WARNING_AS_ERROR OFF)/' \
+	-e 's/\${CMAKE_CXX_FLAGS} -Werror/\${CMAKE_CXX_FLAGS}/' \
+	CMakeLists.txt
 
 %build
-# spdlog uses fmt, but since this doesn't setup linking, use it in header only mode
-export CXXFLAGS="%{build_cxxflags} -DFMT_HEADER_ONLY=1"
-%cmake -DSYSTEM_SDPLOG=ON
+%cmake -DCMAKE_COMPILE_WARNING_AS_ERROR:BOOL=OFF
 %make_build
 
 %install
 %make_install -C build
 
-# Install also the zello_world binary to ease up testing of the l0
 mkdir -p %{buildroot}%{_bindir}
-install -pm 755 %{_vpath_builddir}/bin/zello_world %{buildroot}%{_bindir}/zello_world
-chrpath --delete %{buildroot}%{_bindir}/zello_world
+# Unix Makefiles put the sample next to its sources, not in bin/.
+_zello=$(find "%{_vpath_builddir}" -type f -name zello_world -print -quit)
+test -n "$_zello"
+install -pm 755 "$_zello" %{buildroot}%{_bindir}/zello_world
+if chrpath -l %{buildroot}%{_bindir}/zello_world 2>/dev/null | grep -q 'RPATH\|RUNPATH'; then
+	chrpath --delete %{buildroot}%{_bindir}/zello_world
+fi
 
 %files -n %{libloadername}
 %license LICENSE
