@@ -79,7 +79,9 @@ sed -i \
 
 mkdir -p %{buildroot}%{_bindir}
 # Unix Makefiles put the sample next to its sources, not in bin/.
-_zello=$(find "%{_vpath_builddir}" -type f -name zello_world -print -quit)
+# %{_vpath_builddir} is a meson macro; this package does not build-require
+# meson, and %cmake always configures in ./build.
+_zello=$(find build -type f -name zello_world -print -quit)
 test -n "$_zello"
 install -pm 755 "$_zello" %{buildroot}%{_bindir}/zello_world
 if chrpath -l %{buildroot}%{_bindir}/zello_world 2>/dev/null | grep -q 'RPATH\|RUNPATH'; then
