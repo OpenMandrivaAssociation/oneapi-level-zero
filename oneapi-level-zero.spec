@@ -79,8 +79,8 @@ sed -i \
 
 mkdir -p %{buildroot}%{_bindir}
 # Unix Makefiles put the sample next to its sources, not in bin/.
-# %{_vpath_builddir} is a meson macro; this package does not build-require
-# meson, and %cmake always configures in ./build.
+# The cmake macro always configures in ./build. Do not mention rpm macro
+# names here: rpm expands them even inside comments.
 _zello=$(find build -type f -name zello_world -print -quit)
 test -n "$_zello"
 install -pm 755 "$_zello" %{buildroot}%{_bindir}/zello_world
